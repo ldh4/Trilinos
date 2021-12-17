@@ -1,0 +1,720 @@
+<?xml version="1.0"?>
+<!-- XML File for individual Sierra Commands -->
+<?xml-stylesheet  type="text/xsl"?><?cocoon-process type="xslt"?><sierraCommandSyntax version="1.0">
+
+ <enumerations>
+   <enum general="0">
+     <name>facet_format</name>
+     <enum_entry value="0">STL</enum_entry>
+     <enum_entry value="1">FAC</enum_entry>
+     <enum_entry value="2">PLY</enum_entry>
+     <enum_entry value="3">EXO</enum_entry>
+   </enum>
+   <enum general="0">
+     <name>CompositionMethod</name>
+     <enum_entry value="0">MINIMUM_SIGNED_DISTANCE</enum_entry>
+     <enum_entry value="1">MAXIMUM_SIGNED_DISTANCE</enum_entry>
+   </enum>
+   <enum general="0">
+     <name>CDFEMInequalityCriterion</name>
+     <enum_entry value="0">CDFEM Inequality Criterion Undefined</enum_entry>
+     <enum_entry value="1">&lt;</enum_entry>
+     <enum_entry value="2">&gt;</enum_entry>
+   </enum>
+   <enum general="0">
+     <name>CDFEMEdgeDegeneracyHandlingType</name>
+     <enum_entry value="0">SNAP_TO_NODE</enum_entry>
+     <enum_entry value="1">SNAP_TO_INTERFACE_WHEN_QUALITY_ALLOWS_THEN_SNAP_TO_NODE</enum_entry>
+   </enum>
+   <enum general="0">
+     <name>CDFEMEProlongationModelType</name>
+     <enum_entry value="0">ALE_NEAREST_NODE</enum_entry>
+     <enum_entry value="1">ALE_NEAREST_POINT</enum_entry>
+     <enum_entry value="2">INTERPOLATION</enum_entry>
+   </enum>
+   <enum general="0">
+     <name>CDFEMElementSize</name>
+     <enum_entry value="0">CONFORMAL</enum_entry>
+     <enum_entry value="1">NONCONFORMAL</enum_entry>
+   </enum>
+   <enum general="0">
+     <name>CDFEMSimplexGenerationMethod</name>
+     <enum_entry value="0">CUT_QUADS_BY_GLOBAL_IDENTIFIER</enum_entry>
+     <enum_entry value="1">CUT_QUADS_BY_LARGEST_ANGLE,</enum_entry>
+     <enum_entry value="1">CUT_QUADS_BY_NEAREST_EDGE_CUT</enum_entry>
+   </enum>
+   <enum general="0">
+     <name>RedistanceMethodType</name>
+     <enum_entry value="0">CLOSEST_POINT</enum_entry>
+     <enum_entry value="1">FAST_MARCHING</enum_entry>
+   </enum>
+ </enumerations>
+
+ <block_command usage="GENERAL" physics="LEVELSET" instance="200" resumable="true" min_occurs="0" max_occurs="unbounded">
+
+<!-- COMPUTE_SURFACE_DISTANCE -->
+<!-- block interface initial condition -->
+<!-- Analytic initial condition -->
+
+   <keyword> Level Set Interface </keyword>
+    <line_parameter name="InterfaceName" taglist="Krino-Region Region"/>
+    <summary> Main block for krino level set interface control mechanics.
+    </summary>
+    <description> This is the main block for the level set interface
+                  control mechanics.  This block specifies a level set interface that 
+                  is integrated in time using an extension velocity. 
+                  The plan is that the physics application 
+                  code will see only this mechanics, although there may be several
+                  other supporting mechancis that are plugged in.
+    </description>
+</block_command>
+
+ <block_command usage="GENERAL" physics="CDFEM" instance="200" resumable="true" min_occurs="0" max_occurs="1">
+   <keyword> CDFEM OPTIONS </keyword>
+    <summary> Main block for setting CDFEM options.
+    </summary>
+    <description>
+      This block is where CDFEM options that apply to all CDFEM interfaces in a problem
+      (level sets, CDFEM death, CDFEM isosurfaces, and CDFEM irreversible phase change)
+      can be set. These options include the edge degeneracy handling method, edge tolerance,
+      prolongation model, etc.
+    </description>
+</block_command>
+
+<!-- LINE COMMANDS -->
+<line_command usage="GENERAL" physics="LEVELSET" instance="201" min_occurs="0" max_occurs="unbounded">
+ <keyword>TRACK ISOSURFACE</keyword>
+ <parameter name="Name" type="STRING" count="1"/>
+ <parameter name="Variable" type="STRING" count="1"/>
+ <parameter name="Delimiter1" type="ENUMERATED" enumeration="delimiter" count="1"/>
+ <parameter name="Value" type="REAL" count="1"/>
+ <summary>
+    Specify that an interface that is tied to an isosurface be tracked by a level set.  
+    The name may be used to associated mechanics that runs on the surface.
+ </summary>
+ </line_command>
+
+<line_command usage="GENERAL" physics="LEVELSET" instance="212" min_occurs="0" max_occurs="unbounded">
+ <keyword>TRACK IRREVERSIBLE PHASE CHANGE</keyword>
+ <parameter name="Name" type="STRING" count="1"/>
+ <parameter name="Variable" type="STRING" count="1"/>
+ <parameter name="Criterion" type="ENUMERATED" enumeration="CDFEMInequalityCriterion" count="1"/>
+ <parameter name="Value" type="REAL" count="1"/>
+ <summary>
+   Specify that an interface corresponds to an irreversible phase changed based on the value of
+   a variable. Once the criterion is met an element is moved to the deactivated phase and the field
+   is no longer required to be defined there.
+ </summary>
+</line_command>
+
+ <line_command usage="GENERAL" physics="LEVELSET" instance="213" min_occurs="0" max_occurs="unbounded">
+   <keyword>PERFORM INITIAL REDISTANCE</keyword>
+   <parameter name="Delimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+   <parameter name="performInitialRedistance" type="ENUMERATED" enumeration="bool" count="1" default="FALSE"/>
+   <summary>
+    Perform redistancing operation just after intial conditions are applied.
+   </summary>
+ </line_command>
+ <line_command usage="GENERAL" physics="LEVELSET" instance="214" min_occurs="0" max_occurs="unbounded">
+   <keyword>INITIAL OFFSET DISTANCE</keyword>
+   <parameter name="Delimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+   <parameter name="Offset" type="REAL" count="1"/>
+   <summary>
+    Specify an offset distance to be applied to the initial level set.  Allows the user to grow or
+    shrink the initialized level set.
+   </summary>
+ </line_command>
+ <line_command usage="GENERAL" physics="LEVELSET" instance="215" min_occurs="0" max_occurs="unbounded">
+   <keyword>INITIAL SCALE FACTOR</keyword>
+   <parameter name="Delimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+   <parameter name="Scale" type="REAL" count="1"/>
+   <summary>
+    Specify an scale factor to be applied to the initial lsvel set.  Allows the user to multiple the 
+    entire level set by a constant, primarily useful for nested (concentric) level sets.  This modifier
+    gets applied after the INITIAL OFFSET DISTANCE, if there is one.
+   </summary>
+ </line_command>
+
+ <line_command usage="GENERAL" physics="LEVELSET" instance="202" min_occurs="0" max_occurs="unbounded">
+   <keyword>NARROW BAND ELEMENT SIZE MULTIPLIER</keyword>
+   <parameter name="Delimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+   <parameter name="Value" type="REAL" count="1"/>
+   <summary>
+    Specify the width of the narrow band width used for the level set field as the given multiplier times
+    the maximum element length scale.  If this command is omitted, the distance will be computed throughout
+    the entire domain, but this is not generally scalable in terms of memory or cpu time.
+   </summary>
+ </line_command>
+ 
+ <line_command usage="GENERAL" physics="LEVELSET" instance="205" min_occurs="0" max_occurs="unbounded">
+   <keyword>NARROW BAND WIDTH</keyword>
+   <parameter name="Delimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+   <parameter name="Value" type="REAL" count="1"/>
+   <summary>
+    Specify the width of the narrow band.  This form is deprecated.
+    Use NARROW BAND ELEMENT SIZE MULTIPLIER instead.
+   </summary>
+ </line_command>
+
+ <line_command usage="GENERAL" physics="LEVELSET" instance="217" min_occurs="0" max_occurs="unbounded">
+   <keyword>MAX FEATURE SIZE ON SURFACES</keyword>
+   <parameter name="Delimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+   <parameter name="Value" type="REAL" count="1"/>
+   <summary>
+    Specify the maximum feature size on surfaces, features smaller than this will be destroyed
+    near all surfaces.
+    IN BETA TESTING!
+   </summary>
+ </line_command>
+
+ <line_command usage="GENERAL" physics="LEVELSET" instance="218" min_occurs="0" max_occurs="unbounded">
+   <keyword>SIMPLE MAX FEATURE SIZE ON SURFACES</keyword>
+   <parameter name="Delimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+   <parameter name="Value" type="REAL" count="1"/>
+   <summary>
+    Specify the maximum feature size on surfaces, features smaller than this will be destroyed
+    near all surfaces (simple version)
+    IN BETA TESTING!
+   </summary>
+ </line_command>
+ 
+ <line_command usage="GENERAL" physics="LEVELSET" instance="203" min_occurs="0" max_occurs="unbounded">
+   <keyword>DISTANCE VARIABLE</keyword>
+   <parameter name="Delimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+   <parameter name="Variable" type="STRING" count="1"/>
+   <summary>
+    Specify the distance variable name.
+   </summary>
+ </line_command>
+ 
+ <line_command usage="GENERAL" physics="LEVELSET" instance="204" min_occurs="0" max_occurs="unbounded">
+   <keyword>EXTENSION VELOCITY</keyword>
+   <parameter name="Delimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+   <parameter name="Value" type="REAL" count="1:"/>
+   <summary>
+    Specify the extension velocity used to evolve the level set field.  Default is 0 0 0.
+   </summary>
+ </line_command>
+ 
+ <line_command usage="GENERAL" physics="CDFEM" instance="205" min_occurs="0" max_occurs="unbounded">
+   <keyword>CDFEM EDGE TOLERANCE</keyword>
+   <parameter name="Delimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+   <parameter name="Value" type="REAL" count="1" default="1.0e-3"/>
+   <summary>
+    Specify the tolerance used to "snap" the CDFEM conformal interface to the noncomformal mesh.
+   </summary>
+ </line_command>
+ 
+ <line_command usage="GENERAL" physics="CDFEM" instance="206" min_occurs="0" max_occurs="unbounded">
+   <keyword>CDFEM EDGE DEGENERACY HANDLING</keyword>
+   <parameter name="Delimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+   <parameter name="CDFEMEdgeDegeneracyHandlingType" type="ENUMERATED" enumeration="CDFEMEdgeDegeneracyHandlingType" count="1" default="GLOBAL\_SNAP\_TO\_NODE"/>
+   <summary>
+    Specify the strategy for handling edges that are cut very close to a node.
+   </summary>
+ </line_command>
+ 
+ <line_command usage="GENERAL" physics="CDFEM" instance="207" min_occurs="0" max_occurs="unbounded">
+   <keyword>CDFEM NONCONFORMAL ADAPTIVITY LEVELS</keyword>
+   <parameter name="Delimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+   <parameter name="Value" type="INT" count="1" default="0"/>
+   <summary>
+    Specify the number of levels of non-conformal adaptivity that should be performed before the conformal 
+    decomposition is performed.
+   </summary>
+ </line_command>
+
+ <line_command usage="GENERAL" physics="CDFEM" instance="299" min_occurs="0" max_occurs="unbounded">
+   <keyword>NONCONFORMAL ADAPTIVITY TARGET ELEMENT COUNT</keyword>
+   <parameter name="Delimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+   <parameter name="Value" type="Real" count="1" default="0"/>
+   <summary>
+     Specify a target element count for the nonconformal adaptivity. This will cause the
+     non-conformal adaptivity to use at most "CDFEM NONCONFORMAL ADAPTIVITY LEVELS" levels
+     of refinement of a given parent element and will only refine as elements until the
+     target element count is reached instead of refining all elements cut by the interface.
+     At present this capability only works with analytic initial conditions in krino.
+   </summary>
+ </line_command>
+ 
+ <line_command usage="GENERAL" physics="CDFEM" instance="222" min_occurs="0" max_occurs="unbounded">
+   <keyword>POST ADAPTIVITY UNIFORM REFINEMENT LEVELS</keyword>
+   <parameter name="Delimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+   <parameter name="Value" type="INT" count="1" default="0"/>
+   <summary>
+    Specify the number of levels of uniform mesh refinement that should be performed
+    after any non-conformal adaptivity but before the conformal decomposition is performed.
+   </summary>
+ </line_command>
+ 
+ <line_command usage="GENERAL" physics="CDFEM" instance="208" min_occurs="0" max_occurs="unbounded">
+   <keyword>CDFEM PROLONGATION MODEL</keyword>
+   <parameter name="Delimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+   <parameter name="CDFEMEProlongationModelType" type="ENUMERATED" enumeration="CDFEMEProlongationModelType" count="1" default="ALE\_NEAREST\_NODE"/>
+   <summary>
+    Specify the strategy for prolonging nodes created by conformal decomposition.
+   </summary>
+ </line_command>
+ 
+ <line_command usage="GENERAL" physics="CDFEM" instance="209" min_occurs="0" max_occurs="unbounded">
+   <keyword>CDFEM ELEMENT SIZE</keyword>
+   <parameter name="Delimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+   <parameter name="CDFEMElementSize" type="ENUMERATED" enumeration="CDFEMElementSize" count="1" default="NONCONFORMAL"/>
+   <summary>
+    Specify whether the element size is based on CONFORMAL OR NONCONFORMAL element (used for pressure stabilization).
+   </summary>
+ </line_command>
+ 
+<line_command usage="GENERAL" physics="CDFEM" instance="210" min_occurs="0" max_occurs="unbounded">
+  <keyword>INITIAL PROLONGATION FIELD FOR</keyword>
+  <parameter name="DestFieldName" type="STRING" count="1"/>
+  <parameter name="Delimiter" type="ENUMERATED" enumeration="Delimiter" count="1"/>
+  <parameter name="SrcFieldName" type="STRING" count="1"/>
+  <summary>
+    Specifies that the field DestFieldName will use the field SrcFieldName for prolongation if
+    (no prolongation node is found OR DestFieldName is not defined on the prolongation node) AND
+    DestFieldName was not defined on the node at the last time step. For example this could be used
+    in a foam decomposition problem where no fluid region is initially present, but one appears as
+    the foam decomposes and the fluid field values should be populated based on the foam field values,
+    e.g. INITIAL PROLONGATION FIELD FOR solution->pressure is solution->gas_phase_pressure
+  </summary>
+</line_command>
+
+<line_command usage="GENERAL" physics="CDFEM" instance="217" min_occurs="0" max_occurs="unbounded">
+  <keyword>USE ALE PROLONGATION FOR</keyword>
+  <parameter name="FieldName" type="STRING" count="1"/>
+  <summary>
+    WARNING: Use cases for this line command are VERY rare.
+
+    Force the use of ALE prolongation for the field specified by FieldName.
+  </summary>
+</line_command>
+
+
+<line_command usage="GENERAL" physics="CDFEM" instance="211" min_occurs="0" max_occurs="unbounded">
+   <keyword>CDFEM SIMPLEX GENERATION METHOD</keyword>
+   <parameter name="Delimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+   <parameter name="CDFEMSimplexGenerationMethod" type="ENUMERATED" enumeration="CDFEMSimplexGenerationMethod" count="1"/>
+   <summary>
+    Specify how the quadrilateral elements (2D) or quadrilateral faces (3D) that are generated by 
+    the conformal decomposition process are subdivided into triangles.
+    Default: For 2D: CUT_QUADS_BY_LARGEST_ANGLE, For 3D: CUT_QUADS_BY_NEAREST_EDGE_CUT
+   </summary>
+ </line_command>
+ <line_command usage="GENERAL" physics="CDFEM" instance="212" min_occurs="0" max_occurs="unbounded">
+   <keyword>CDFEM DOF EDGE TOLERANCE</keyword>
+   <parameter name="Delimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+   <parameter name="Value" type="REAL" count="1" default="0.0"/>
+   <summary>
+    Specify the tolerance used to "snap" the DOFs to the edge node values on CDFEM meshes.
+   </summary>
+ </line_command>
+ <line_command usage="GENERAL" physics="CDFEM" instance="213" min_occurs="0" max_occurs="1">
+   <keyword>NUMBER OF INITIAL DECOMPOSITION CYCLES</keyword>
+   <parameter name="Delimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+   <parameter name="Value" type="INTEGER" count="1" default="1"/>
+   <summary>
+    Specify the number of times the mesh is decomposed and the fields are (re)initialized.
+    Repeated decomposition and initialization improves the accuracy of the interface location because
+    the added nodes are also initialized.
+   </summary>
+ </line_command>
+ <line_command usage="GENERAL" physics="CDFEM" instance="214" min_occurs="0" max_occurs="unbounded">
+   <keyword>USE HIERARCHICAL DOFS</keyword>
+   <parameter name="Delimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+   <parameter name="useHierarchicalDofs" type="ENUMERATED" enumeration="bool" count="1" default="FALSE"/>
+   <summary>
+    Specify whether the CDFEM DOFs should be transformed to hierarchical unknowns.  This can significantly 
+    improve the performance of iterative solvers, especially in parallel. Default = FALSE.
+   </summary>
+ </line_command>
+ <line_command usage="GENERAL" physics="CDFEM" instance="215" min_occurs="0" max_occurs="1">
+   <keyword>CDFEM INTERNAL SIDE STABILIZATION</keyword>
+   <optional>
+     <parameter name="SignToken" type="TOKEN" token="MULTIPLIER" count="1"/>
+     <parameter name="Delimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+     <parameter name="Multiplier" type="REAL" count="1"/>
+   </optional>
+   <summary>
+     Turn on internal face stabilization on equations that support it, optionally specifying a multiplier (default = 1.0).
+   </summary>
+ </line_command>
+ <line_command usage="GENERAL" physics="CDFEM" instance="216" min_occurs="0" max_occurs="unbounded">
+   <keyword>CONSTRAIN CDFEM TO XFEM SPACE</keyword>
+   <parameter name="Delimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+   <parameter name="constrainCDFEMtoXFEM" type="ENUMERATED" enumeration="bool" count="1" default="FALSE"/>
+   <summary>
+    Specify whether the CDFEM DOFs should be constrained to the coarser XFEM discrete space. Default = FALSE.
+   </summary>
+ </line_command>
+ 
+ <line_command usage="GENERAL" physics="LEVELSET" instance="210" min_occurs="0" max_occurs="unbounded">
+   <keyword>COMPOSITE NAME</keyword>
+   <parameter name="Delimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+   <parameter name="Variable" type="STRING" count="1"/>
+   <summary>
+    Optionally specify a composite level set name which may be used across multiple level sets to define composite phases.
+   </summary>
+ </line_command>
+ 
+ <line_command usage="GENERAL" physics="LEVELSET" instance="211" min_occurs="0" max_occurs="unbounded">
+   <keyword>REDISTANCE METHOD</keyword>
+   <parameter name="Delimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+   <parameter name="RedistanceMethodType" type="ENUMERATED" enumeration="RedistanceMethodType" count="1" default="CLOSEST\_POINT"/>
+   <summary>
+    Specify the algorithm to be used for redistancing.
+   </summary>
+ </line_command>
+
+  <line_command usage="GENERAL" physics="LEVELSET" instance="227" min_occurs="0" max_occurs="1">
+   <keyword>REINITIALIZE EVERY STEP</keyword>
+   <summary>
+     Specify that this level set interface should be re-initialized every time step. For
+     example this can be combined with an analytic mesh surface initial condition that is
+     moving due to applied displacements to move the CDFEM interface location with the mesh
+     surface.
+   </summary>
+ </line_command>
+ 
+<!-- GENERAL COMMAND BLOCKS -->
+  <block_command usage="GENERAL" physics="LEVELSET" instance="220" min_occurs="0" max_occurs="unbounded">
+
+     <keyword>COMPUTE_SURFACE_DISTANCE</keyword>
+       <line_parameter name="SurfaceName"/>
+       <summary>
+        Allows the specification of mesh surfaces that lie on the initial level set interface.
+       </summary>
+    
+       <line_command usage="GENERAL" physics="LEVELSET" instance="221" min_occurs="0" max_occurs="unbounded">
+         <keyword>ADD</keyword>
+         <parameter name="InblockList" type="STRING" count="1:"/>
+         <summary>
+         Specify mesh surface that is on the level set surface.
+         </summary>
+       </line_command>
+
+   </block_command>
+
+<!-- INITIAL_CONDITION COMMAND BLOCKS -->
+   <block_command usage="INITIAL_CONDITION" physics="LEVELSET" instance="1" min_occurs="0" max_occurs="unbounded">
+
+     <keyword>Block Interface INITIAL CONDITION</keyword>
+       <line_parameter name="BlockName"/>
+       <summary>
+        Allows the specification of element blocks that are either INTERIOR
+        or EXTERIOR relative to the initial level set interface.
+       </summary>
+    
+       <line_command usage="INITIAL_CONDITION" physics="LEVELSET" instance="101" min_occurs="0" max_occurs="unbounded">
+         <keyword>ADD INTERIOR VOLUME</keyword>
+         <parameter name="InblockList" type="STRING" count="1:"/>
+         <summary>
+         Specify element blocks that are inside the level set surface.
+         </summary>
+       </line_command>
+     
+       <line_command usage="INITIAL_CONDITION" physics="LEVELSET" instance="102" min_occurs="0" max_occurs="unbounded">
+         <keyword>ADD EXTERIOR VOLUME</keyword>
+         <parameter name="OutblockList" type="STRING" count="1:"/>
+         <summary>
+           Specify element blocks that are outside the level set surface.
+         </summary>
+       </line_command>
+
+   </block_command>
+
+   <block_command usage="INITIAL_CONDITION" physics="LEVELSET" instance="2" min_occurs="0" max_occurs="unbounded">
+
+     <keyword>Analytic INITIAL CONDITION</keyword>
+
+       <line_parameter name="BlockName"/>
+       <summary>
+        Allows the specification of analytic initial condition blocks.  Must specify at
+        least one analytic shape.  Can have one to many analytic shapes in
+        any combination on a single level set interface.
+       </summary>
+    
+       <line_command usage="INITIAL_CONDITION" physics="LEVELSET" instance="103" min_occurs="0" max_occurs="unbounded">
+         <keyword>SPHERE</keyword>
+         <parameter name="CenterToken" type="TOKEN" token="center" count="1"/>
+         <parameter name="Delimiter1" type="ENUMERATED" enumeration="delimiter" count="1"/>
+         <parameter name="Center" type="REAL" count="3"/>
+         <parameter name="RadiusToken" type="TOKEN" token="radius" count="1"/>
+         <parameter name="Delimiter2" type="ENUMERATED" enumeration="delimiter" count="1"/>
+         <parameter name="Radius" type="REAL" count="1"/>
+	 <all>
+           <sequence min_occurs="0" max_occurs="1">
+             <parameter name="SignToken" type="TOKEN" token="sign"/>
+             <parameter name="equals2" type="TOKEN" token="="/>
+             <parameter name="Sign" type="INTEGER" count="0:1"/>
+           </sequence>
+           <sequence min_occurs="0" max_occurs="1">
+             <parameter name="MotionToken" type="TOKEN" token="motion"/>
+             <parameter name="equals1" type="TOKEN" token="="/>
+             <parameter name="Motion" type="STRING" count="0:1"/>
+           </sequence>
+         </all>
+         <summary>
+          Specify sphere as interface surface with given center and radius.
+         </summary>
+       </line_command>
+
+       <line_command usage="INITIAL_CONDITION" physics="LEVELSET" instance="104" min_occurs="0" max_occurs="unbounded">
+         <keyword>CYLINDER</keyword>
+         <parameter name="P1" type="TOKEN" token="p1" count="1"/>
+         <parameter name="Delimiter1" type="ENUMERATED" enumeration="delimiter" count="1"/>
+         <parameter name="Param2" type="REAL" count="3"/>
+         <parameter name="P2" type="TOKEN" token="p2" count="1"/>
+         <parameter name="Delimiter2" type="ENUMERATED" enumeration="delimiter" count="1"/>
+         <parameter name="Param5" type="REAL" count="3"/>
+         <parameter name="Radius" type="TOKEN" token="radius" count="1"/>
+         <parameter name="Delimiter3" type="ENUMERATED" enumeration="delimiter" count="1"/>
+         <parameter name="Param8" type="REAL" count="1"/>
+	 <all>
+           <sequence min_occurs="0" max_occurs="1">
+             <parameter name="SignToken" type="TOKEN" token="sign"/>
+             <parameter name="equals2" type="TOKEN" token="="/>
+             <parameter name="Sign" type="INTEGER" count="0:1"/>
+           </sequence>
+           <sequence min_occurs="0" max_occurs="1">
+             <parameter name="MotionToken" type="TOKEN" token="motion"/>
+             <parameter name="equals1" type="TOKEN" token="="/>
+             <parameter name="Motion" type="STRING" count="0:1"/>
+           </sequence>
+         </all>
+         <summary>
+          Specify cylinder as  interface surface, with given radius and 
+          two endpoints of axis p1 and p2.  The length of the cylinder
+          is norm(p2 - p1).
+         </summary>
+       </line_command>
+       
+       <line_command usage="INITIAL_CONDITION" physics="LEVELSET" instance="107" min_occurs="0" max_occurs="unbounded">
+         <keyword>COMPOSITION METHOD</keyword>
+         <parameter name="Delimiter1" type="ENUMERATED" enumeration="delimiter" count="1"/>
+         <parameter name="CompositionMethod" type="ENUMERATED" enumeration="CompositionMethod" count="1"/>
+         <summary>
+           Specify the method used to combine the results of the individual surface distance calculations.  
+           Using MINIMUM_SIGNED_DISTANCE, the resulting negative region will be the union of the negative regions of the
+           individual surfaces.  The positive region will be the intersection of the positive regions of the individual surfaces.
+           Using MAXIMUM_SIGNED_DISTANCE, the resulting negative region will be the intersection of the negative regions of 
+           the individual surfaces.  The positive region will be the union of the positive regions of the individual surfaces.
+           The default is MINIMUM_SIGNED_DISTANCE.
+         </summary>
+       </line_command>
+       
+       <line_command usage="INITIAL_CONDITION" physics="LEVELSET" instance="111" min_occurs="0" max_occurs="1">
+         <keyword>COMPUTE TIME OF ARRIVAL WITH ELEMENT SPEED</keyword>
+         <parameter name="Delimiter1" type="ENUMERATED" enumeration="delimiter" count="1"/>
+         <parameter name="ElementSpeedFieldName" type="STRING" count="1"/>
+         <summary>
+           Specify that the level set field should be initialized to the time-of-arrival of the interface to each point 
+           in space where the level set field is defined.  This calculation uses a element-based field that indicates
+           the speed at which the interface moves through the element.  The zero contour of the field is the intial location
+           of the interface and is specified via the surfaces in the initial condition.
+         </summary>
+       </line_command>
+       <line_command usage="INITIAL_CONDITION" physics="LEVELSET" instance="112" min_occurs="0" max_occurs="unbounded">
+         <keyword>COMPUTE TIME OF ARRIVAL ON</keyword>
+         <parameter name="BlockName" type="STRING" count="1"/>
+         <parameter name="Speed" type="TOKEN" token="speed" count="1"/>
+         <parameter name="Delimiter1" type="ENUMERATED" enumeration="delimiter" count="1"/>
+         <parameter name="BlockSpeed" type="REAL" count="1"/>
+         <summary>
+           Specify that the level set field should be initialized to the time-of-arrival of the interface to each point 
+           in space where the level set field is defined.  This calculation uses the given speed to indicate
+           the speed at which the interface moves through the given block.  The zero contour of the field is the intial location
+           of the interface and is specified via the surfaces in the initial condition.
+         </summary>
+       </line_command>
+
+       <line_command usage="INITIAL_CONDITION" physics="LEVELSET" instance="105" min_occurs="0" max_occurs="unbounded">
+         <keyword>Facets</keyword>
+         <parameter name="Format" type="TOKEN" token="format" count="1"/>
+         <parameter name="Delimiter1" type="ENUMERATED" enumeration="delimiter" count="1"/>
+         <parameter name="Facet_format" type="ENUMERATED" enumeration="facet_format" count="1"/>
+         <parameter name="Filename" type="TOKEN" token="filename" count="1"/>
+         <parameter name="Delimiter2" type="ENUMERATED" enumeration="delimiter" count="1"/>
+         <parameter name="Facet_filename" type="STRING" count="1"/>
+         <all>
+           <sequence min_occurs="0" max_occurs="1">
+             <parameter name="ScaleToken" type="TOKEN" token="scale" count="1"/>
+             <parameter name="equals3" type="TOKEN" token="=" count="1"/>
+             <parameter name="ScaleFactor" type="REAL" count="1"/>
+           </sequence>
+           <sequence min_occurs="0" max_occurs="1">
+             <parameter name="SignToken" type="TOKEN" token="sign"/>
+             <parameter name="equals2" type="TOKEN" token="="/>
+             <parameter name="Sign" type="INTEGER" count="1"/>
+           </sequence>
+           <sequence min_occurs="0" max_occurs="1">
+             <parameter name="MotionToken" type="TOKEN" token="motion"/>
+             <parameter name="equals1" type="TOKEN" token="="/>
+             <parameter name="Motion" type="STRING" count="1"/>
+           </sequence>
+         </all>
+         <summary>
+           Specify a file containing a surface from which the level set should be initialized.
+         </summary>
+       </line_command>
+       
+       <line_command usage="INITIAL_CONDITION" physics="LEVELSET" instance="106" min_occurs="0" max_occurs="unbounded">
+         <keyword>Mesh</keyword>
+         <parameter name="Surfacename" type="STRING" count="1"/>
+         <optional>
+	   <parameter name="SignToken" type="TOKEN" token="sign" count="1"/>
+	   <parameter name="Delimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+           <parameter name="Sign" type="INTEGER" count="1"/>
+	 </optional>
+         <summary>
+           Specify a mesh surface as interface surface.
+         </summary>
+       </line_command>
+       
+       <line_command usage="INITIAL_CONDITION" physics="LEVELSET" instance="108" min_occurs="0" max_occurs="unbounded">
+         <keyword>PLANE</keyword>
+         <parameter name="Normal" type="TOKEN" token="normal" count="1"/>
+         <parameter name="Delimiter1" type="ENUMERATED" enumeration="delimiter" count="1"/>
+         <parameter name="Param2" type="REAL" count="3"/>
+         <parameter name="Offset" type="TOKEN" token="offset" count="1"/>
+         <parameter name="Delimiter2" type="ENUMERATED" enumeration="delimiter" count="1"/>
+         <parameter name="Param5" type="REAL" count="1"/>
+         <optional>
+           <parameter name="SignToken" type="TOKEN" token="sign" count="1"/>
+           <parameter name="Delimiter3" type="ENUMERATED" enumeration="delimiter" count="1"/>
+           <parameter name="Sign" type="INTEGER" count="1"/>
+         </optional>
+         <summary>
+          Specify plane as interface surface with given normal and offset. 
+          Equation of plane is 0 = normal/mag(normal) dot x + offset. Given the vector r to a point on the plane, 
+          the offset is -normal/mag(normal) dot r. 
+         </summary>
+       </line_command>
+       
+       <line_command usage="INITIAL_CONDITION" physics="LEVELSET" instance="109" min_occurs="0" max_occurs="unbounded">
+         <keyword>RANDOM</keyword>
+         <optional>
+           <parameter name="SeedToken" type="TOKEN" token="seed" count="1"/>
+           <parameter name="Delimiter3" type="ENUMERATED" enumeration="delimiter" count="1"/>
+           <parameter name="Seed" type="INTEGER" count="1"/>
+         </optional>
+         <summary>
+          Specify initial condition to pseudorandom field between -1 and 1.
+         </summary>
+       </line_command>
+       
+       <line_command usage="INITIAL_CONDITION" physics="LEVELSET" instance="110" min_occurs="0" max_occurs="unbounded">
+         <keyword>ELLIPSOID</keyword>
+         <parameter name="CenterToken" type="TOKEN" token="center" count="1"/>
+         <parameter name="CenterDelimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+         <parameter name="Center" type="REAL" count="3"/>
+         <parameter name="SemiaxesToken" type="TOKEN" token="semiaxes" count="1"/>
+         <parameter name="SemiAxesDelimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+         <parameter name="Semiaxes" type="REAL" count="3"/>
+         <all>
+           <sequence min_occurs="0" max_occurs="1">
+             <parameter name="RotationToken" type="TOKEN" token="rotation" count="1"/>
+             <parameter name="RotationDelimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+             <parameter name="Rotation" type="REAL" count="3"/>
+           </sequence>
+           <sequence min_occurs="0" max_occurs="1">
+             <parameter name="SignToken" type="TOKEN" token="sign" count="1"/>
+             <parameter name="SignDelimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+             <parameter name="Sign" type="INTEGER" count="1"/>
+           </sequence>
+         </all>
+         <summary>
+          Specify Ellisoid as interface surface with given center and semiaxes. Note the result is not an exact distance 
+          function except in the case of a sphere (equal semiaxes).
+         </summary>
+       </line_command>
+
+   </block_command>
+   
+   <!--Begin Element Death Death Name-->
+  <block_command usage="GENERAL" physics="LEVELSET" instance="300" min_occurs="0" max_occurs="unbounded">
+    <keyword>CDFEM Death</keyword>
+    <line_parameter name="Death Name"/>
+    <summary>
+      Allows the specification of an element death criterion to one or
+      more element volumes.  The group of element volumes plus a death
+      criterion make up a "death instance".
+    </summary>
+  </block_command>
+
+  <!-- Volume {is|=} Block-Name -->
+  <line_command usage="GENERAL" physics="LEVELSET" instance="301" min_occurs="0" max_occurs="unbounded">
+    <keyword>Add Volume</keyword>
+    <parameter name="Block Name" type="STRING" count="1:"/>
+    <summary>
+      Specifies the names identifying an element volume to which an element death
+      criterion is to be applied.  Line can be repeated as needed to
+      add multiple volumes. A group of element volumes plus a death
+      criterion make up a "death instance".
+    </summary>
+  </line_command>
+
+  <!-- Criterion is VariableName {>|<} Threshold Value           -->
+  <line_command usage="GENERAL" physics="LEVELSET" instance="302" min_occurs="0" max_occurs="unbounded">
+    <keyword>Criterion</keyword>
+    <parameter name="Assign" type="ENUMERATED" enumeration="delimiter" count="1"/>
+    <parameter name="Variable Name" type="STRING" count="1"/>
+    <parameter name="CDFEMInequalityCriterion" type="ENUMERATED" enumeration="CDFEMInequalityCriterion" count="1"/>
+    <parameter name="Threshold Value" type="REAL" count="1"/>
+    <summary>
+      The death criterion for one or more element volumes.  
+      A group of element volumes plus a death
+      criterion make up a "death instance".  Currently only one
+      criterion is allowed per death instance.
+    </summary>
+  </line_command>
+  
+  <block_command usage="GENERAL" physics="LEVELSET" instance="400" min_occurs="0" max_occurs="unbounded">
+    <keyword>Motion Specification</keyword>
+    <line_parameter name="Motion"/>
+    <line_command usage="GENERAL" physics="LEVELSET" instance="401" min_occurs="0" max_occurs="unbounded">
+      <keyword>Translational Velocity</keyword>
+      <parameter name="Delimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+      <parameter name="velocity" type="REAL" count="3"/>
+      <summary>
+        Specifies the translational velocity of the surface.
+      </summary>
+    </line_command>
+    <line_command usage="GENERAL" physics="LEVELSET" instance="402" min_occurs="0" max_occurs="unbounded">
+      <keyword>Rotational Velocity</keyword>
+      <parameter name="Delimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+      <parameter name="velocity" type="REAL" count="3"/>
+      <summary>
+        Specifies the rotational velocity of the surface.
+      </summary>
+    </line_command>
+    <line_command usage="GENERAL" physics="LEVELSET" instance="403" min_occurs="0" max_occurs="unbounded">
+      <keyword>Reference Point</keyword>
+      <parameter name="Delimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+      <parameter name="point" type="REAL" count="3"/>
+      <summary>
+        Specifies the translational velocity of the surface.
+      </summary>
+    </line_command>
+    <line_command usage="GENERAL" physics="LEVELSET" instance="404" min_occurs="0" max_occurs="unbounded">
+      <keyword>Initial Displacement</keyword>
+      <parameter name="Delimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+      <parameter name="displacement" type="REAL" count="3"/>
+      <summary>
+        Specifies the initial displacement of the surface.
+      </summary>
+    </line_command>
+    <line_command usage="GENERAL" physics="LEVELSET" instance="405" min_occurs="0" max_occurs="unbounded">
+      <keyword>Initial Rotation</keyword>
+      <parameter name="Delimiter" type="ENUMERATED" enumeration="delimiter" count="1"/>
+      <parameter name="rotation" type="REAL" count="3"/>
+      <summary>
+        Specifies the initial rotation of the surface.
+      </summary>
+    </line_command>
+    <summary>
+      Specifies the rigid body motion of a surface.
+    </summary>
+  </block_command>
+
+</sierraCommandSyntax>

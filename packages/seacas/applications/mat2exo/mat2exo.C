@@ -35,6 +35,7 @@
 #include "matio_pubconf.h" // for MATIO_VERSION
 #include <SL_tokenize.h>   // for tokenize
 #include <cstddef>         // for size_t
+#include <cstdio>          // for sprintf, printf, fprintf, etc
 #include <cstring>         // for strtok, memcpy, strlen, etc
 #include <exodusII.h>      // for ex_put_variable_param, etc
 #include <numeric>         // for accumulate
@@ -346,7 +347,7 @@ int main(int argc, char *argv[])
   ex_close(exo_file);
   Mat_Close(mat_file);
 
-  fmt::printf("done.\n");
+  fprintf(stderr, "done.\n");
 
   add_to_log("mat2exo", 0);
   return (0);

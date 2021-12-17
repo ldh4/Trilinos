@@ -10,6 +10,7 @@
 #include <Ioss_SmartAssert.h>
 #include <Ioss_Utils.h>
 #include <Ioss_VariableType.h>
+#include <Ioss_Version.h>
 #include <algorithm>
 #include <cstring>
 #include <exodus/Ioex_Utils.h>
@@ -91,6 +92,8 @@ namespace {
 } // namespace
 
 namespace Ioex {
+  const char *Version() { return Ioss::Version(); }
+
   void update_last_time_attribute(int exodusFilePtr, double value)
   {
     double tmp    = 0.0;
@@ -613,8 +616,8 @@ namespace Ioex {
     for (const auto &block : element_blocks) {
 
       if (Ioss::Utils::block_is_omitted(block)) {
-        int64_t min_id = block->get_offset() + 1;
-        int64_t max_id = min_id + block->entity_count() - 1;
+        ssize_t min_id = block->get_offset() + 1;
+        ssize_t max_id = min_id + block->entity_count() - 1;
         for (size_t i = 0; i < elements.size(); i++) {
           if (min_id <= elements[i] && elements[i] <= max_id) {
             omitted     = true;
@@ -709,7 +712,8 @@ namespace Ioex {
 
   void write_reduction_attributes(int exoid, const Ioss::GroupingEntity *ge)
   {
-    Ioss::NameList properties = ge->property_describe(Ioss::Property::Origin::ATTRIBUTE);
+    Ioss::NameList properties;
+    ge->property_describe(Ioss::Property::Origin::ATTRIBUTE, &properties);
 
     auto type = Ioex::map_exodus_type(ge->type());
     auto id   = ge->get_optional_property("id", 0);

@@ -128,12 +128,14 @@ namespace {
         std::string type = types.first;
 
         if (type == "all" || type == "global") {
-          Ioss::NameList fields = region.field_describe(Ioss::Field::REDUCTION);
+          Ioss::NameList fields;
+          region.field_describe(Ioss::Field::REDUCTION, &fields);
           output_names("Global", fields, &region);
         }
         if (type == "all" || type == "nodal") {
-          Ioss::NodeBlock *nb     = region.get_node_blocks()[0];
-          Ioss::NameList   fields = nb->field_describe(Ioss::Field::TRANSIENT);
+          Ioss::NameList   fields;
+          Ioss::NodeBlock *nb = region.get_node_blocks()[0];
+          nb->field_describe(Ioss::Field::TRANSIENT, &fields);
           output_names("Nodal", fields, nb);
         }
       }

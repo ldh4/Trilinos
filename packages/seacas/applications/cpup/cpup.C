@@ -323,7 +323,8 @@ template <typename INT> void cpup(Cpup::SystemInterface &interFace, INT /*dummy*
           auto &name      = pblock->name();
           auto  name_proc = Iocgns::Utils::decompose_name(name, true);
           if (name_proc.first == block->name()) {
-            Ioss::NameList fields = pblock->field_describe(Ioss::Field::TRANSIENT);
+            Ioss::NameList fields;
+            pblock->field_describe(Ioss::Field::TRANSIENT, &fields);
 
             for (const auto &field_name : fields) {
               if (is_field_valid(variable_list, field_name)) {
@@ -510,7 +511,8 @@ namespace {
       std::vector<double> output(num_cell);
       std::vector<double> input;
 
-      Ioss::NameList fields = block->field_describe(Ioss::Field::TRANSIENT);
+      Ioss::NameList fields;
+      block->field_describe(Ioss::Field::TRANSIENT, &fields);
 
       // Not sure if this is the best ordering of loops, but it minimizes the
       // amount of data gathered at one time at the cost of multiple iterations
@@ -544,7 +546,8 @@ namespace {
       std::vector<double> output(num_node);
       std::vector<double> input;
 
-      Ioss::NameList fields = onb.field_describe(Ioss::Field::TRANSIENT);
+      Ioss::NameList fields;
+      onb.field_describe(Ioss::Field::TRANSIENT, &fields);
 
       // Not sure if this is the best ordering of loops, but it minimizes the
       // amount of data gathered at one time at the cost of multiple iterations

@@ -390,7 +390,8 @@ namespace {
 
     char suffix[2] = {suffix_separator, '\0'};
 
-    std::vector<std::string> tokens = Ioss::tokenize(names[which_names.back()], suffix);
+    std::vector<std::string> tokens =
+        Ioss::tokenize(names[which_names[which_names.size() - 1]], suffix);
 
     if (tokens.size() <= 2) {
       return nullptr;
@@ -399,7 +400,7 @@ namespace {
     assert(tokens.size() > 2);
 
     // Check that suffix is a number -- all digits
-    int N = Ioss::Utils::get_number(tokens.back());
+    int N = Ioss::Utils::get_number(tokens[tokens.size() - 1]);
 
     if (N == 0) {
       return nullptr;
@@ -1351,7 +1352,8 @@ std::string Ioss::Utils::get_type_from_file(const std::string &filename)
 void Ioss::Utils::info_fields(const Ioss::GroupingEntity *ige, Ioss::Field::RoleType role,
                               const std::string &header, const std::string &suffix)
 {
-  Ioss::NameList fields = ige->field_describe(role);
+  Ioss::NameList fields;
+  ige->field_describe(role, &fields);
 
   if (fields.empty()) {
     return;
@@ -1360,7 +1362,9 @@ void Ioss::Utils::info_fields(const Ioss::GroupingEntity *ige, Ioss::Field::Role
   if (!header.empty()) {
     fmt::print("{}{}", header, suffix);
   }
-  // Iterate through results fields. Get max width of a name...
+  // Iterate through results fields and transfer to output
+  // database...
+  // Get max width of a name...
   size_t max_width = 0;
   for (const auto &field_name : fields) {
     max_width = max_width > field_name.length() ? max_width : field_name.length();
@@ -1393,7 +1397,8 @@ void Ioss::Utils::info_property(const Ioss::GroupingEntity *ige, Ioss::Property:
                                 const std::string &header, const std::string &suffix,
                                 bool print_empty)
 {
-  Ioss::NameList properties = ige->property_describe(origin);
+  Ioss::NameList properties;
+  ige->property_describe(origin, &properties);
 
   if (properties.empty()) {
     if (print_empty && !header.empty()) {

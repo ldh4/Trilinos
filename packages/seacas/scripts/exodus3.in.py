@@ -83,8 +83,9 @@ rights in this software.
 
 EXODUS_PY_CONTACTS = """
 Authors:
-  Greg Sjaardema   (gdsjaar@sandia.gov)
   Mario LoPrinzi   (mvlopri@sandia.gov)
+  Greg Sjaardema   (gdsjaar@sandia.gov)
+
   Timothy Shelton  (trshelt@sandia.gov)
   Michael Veilleux (mgveill@sandia.gov)
   David Littlewood (djlittl@sandia.gov)
@@ -105,7 +106,9 @@ def basename(file_name):
     Extract base name from file_name.
     `basename("test.e") -> "test"`
     """
-    return os.path.splitext(file_name)[0]
+    fileParts = file_name.split(".")
+    base_name = ".".join(fileParts[:-1])
+    return base_name
 
 
 def getExodusVersion():

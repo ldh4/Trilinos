@@ -16,10 +16,10 @@ namespace Iovs {
     properties             = nullptr;
   }
 
-  void CatalystLogging::setProperties(const Ioss::PropertyManager *my_properties)
+  void CatalystLogging::setProperties(const Ioss::PropertyManager *properties)
   {
     initializeDefaults();
-    this->properties = my_properties;
+    this->properties = properties;
     if (this->properties) {
       if (this->properties->exists(enabledProp)) {
         catalystLoggingEnabled = this->properties->get(enabledProp).get_int();
@@ -61,7 +61,8 @@ namespace Iovs {
   {
     std::vector<std::string> headers;
     if (properties) {
-      Ioss::NameList names = properties->describe();
+      Ioss::NameList names;
+      properties->describe(&names);
       for (auto name : names) {
         if (isCatalystLoggingProp(name)) {
           if (isSupportedPropType(name) && !isReservedPropName(name)) {
@@ -83,7 +84,7 @@ namespace Iovs {
     return result;
   }
 
-  void CatalystLogging::writeVectorWithDelimeter(std::fstream                   &file,
+  void CatalystLogging::writeVectorWithDelimeter(std::fstream &                  file,
                                                  const std::vector<std::string> &string_vector,
                                                  char                            delimeter)
   {
@@ -185,7 +186,6 @@ namespace Iovs {
         case Ioss::Property::REAL: logOutput.push_back(std::to_string(prop.get_real())); break;
         case Ioss::Property::INTEGER: logOutput.push_back(std::to_string(prop.get_int())); break;
         case Ioss::Property::STRING: logOutput.push_back(prop.get_string()); break;
-        default: logOutput.push_back("Unsupported property type for " + propName);
         }
       }
     }

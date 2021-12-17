@@ -185,7 +185,8 @@ void write_blob()
       size_t p_offset = blob->get_optional_property("_processor_offset", 0);
 
       // Get the fields that are defined on this blob...
-      Ioss::NameList fields = blob->field_describe(Ioss::Field::RoleType::TRANSIENT);
+      Ioss::NameList fields;
+      blob->field_describe(Ioss::Field::RoleType::TRANSIENT, &fields);
       Ioss::sort(fields.begin(), fields.end()); // Just done for testing; not needed
       for (const auto &field : fields) {
         std::vector<double> data = generate_data(time, gl_size, idx++, size, p_offset);
@@ -193,7 +194,8 @@ void write_blob()
       }
 
       // Reduction fields...
-      Ioss::NameList red_fields = blob->field_describe(Ioss::Field::RoleType::REDUCTION);
+      Ioss::NameList red_fields;
+      blob->field_describe(Ioss::Field::RoleType::REDUCTION, &red_fields);
       for (const auto &field : red_fields) {
         std::vector<double> data = generate_data(time, 3, idx++, 3, 0);
         blob->put_field_data(field, data);
@@ -241,12 +243,14 @@ bool read_blob()
 
   for (const auto *blob : blobs) {
     // Get the names of the fields that are defined on this blob...
-    Ioss::NameList fields = blob->field_describe(Ioss::Field::RoleType::TRANSIENT);
+    Ioss::NameList fields;
+    blob->field_describe(Ioss::Field::RoleType::TRANSIENT, &fields);
     Ioss::sort(fields.begin(), fields.end()); // Just done for testing; not needed
     all_fields.push_back(fields);
 
     // Reduction fields...
-    Ioss::NameList red_fields = blob->field_describe(Ioss::Field::RoleType::REDUCTION);
+    Ioss::NameList red_fields;
+    blob->field_describe(Ioss::Field::RoleType::REDUCTION, &red_fields);
     all_red_fields.push_back(red_fields);
   }
 

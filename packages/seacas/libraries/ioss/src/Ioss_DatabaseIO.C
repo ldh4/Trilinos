@@ -192,13 +192,6 @@ namespace Ioss {
       fieldSeparator  = tmp[0];
     }
 
-    // If `FIELD_SUFFIX_SEPARATOR` is empty and there are fields that
-    // end with an underscore, then strip the underscore. This will
-    // cause d_x, d_y, d_z to be a 3-component field 'd' and vx, vy,
-    // vz to be a 3-component field 'v'.
-    Utils::check_set_bool_property(properties, "FIELD_STRIP_TRAILING_UNDERSCORE",
-                                   fieldStripTrailing_);
-
     if (properties.exists("INTEGER_SIZE_API")) {
       int isize = properties.get("INTEGER_SIZE_API").get_int();
       if (isize == 8) {
@@ -1085,8 +1078,8 @@ namespace Ioss {
       std::vector<double> coordinates;
       Ioss::NodeBlock    *nb = get_region()->get_node_blocks()[0];
       nb->get_field_data("mesh_model_coordinates", coordinates);
-      auto nnode = nb->entity_count();
-      auto ndim  = nb->get_property("component_degree").get_int();
+      ssize_t nnode = nb->entity_count();
+      ssize_t ndim  = nb->get_property("component_degree").get_int();
 
       const Ioss::ElementBlockContainer &element_blocks = get_region()->get_element_blocks();
       size_t                             nblock         = element_blocks.size();
@@ -1133,8 +1126,8 @@ namespace Ioss {
   {
     std::vector<double> coordinates;
     nb->get_field_data("mesh_model_coordinates", coordinates);
-    auto nnode = nb->entity_count();
-    auto ndim  = nb->get_property("component_degree").get_int();
+    ssize_t nnode = nb->entity_count();
+    ssize_t ndim  = nb->get_property("component_degree").get_int();
 
     double xmin, ymin, zmin, xmax, ymax, zmax;
     calc_bounding_box(ndim, nnode, coordinates, xmin, ymin, zmin, xmax, ymax, zmax);
@@ -1157,7 +1150,7 @@ namespace Ioss {
 
   AxisAlignedBoundingBox DatabaseIO::get_bounding_box(const Ioss::StructuredBlock *sb) const
   {
-    auto ndim = sb->get_property("component_degree").get_int();
+    ssize_t ndim = sb->get_property("component_degree").get_int();
 
     std::pair<double, double> xx;
     std::pair<double, double> yy;

@@ -95,7 +95,8 @@ namespace {
     size_t      max_size = max_field.first;
     std::string max_name = max_field.second;
     for (const auto &entity : entities) {
-      Ioss::NameList fields = entity->field_describe();
+      Ioss::NameList fields;
+      entity->field_describe(&fields);
       for (const auto &field_name : fields) {
         Ioss::Field field = entity->get_field(field_name);
         if (field.get_size() > max_size) {
@@ -1100,7 +1101,8 @@ namespace {
                        Ioss::Field::RoleType role, const std::string &prefix)
   {
     // Check for transient fields...
-    Ioss::NameList fields = ige->field_describe(role);
+    Ioss::NameList fields;
+    ige->field_describe(role, &fields);
 
     // Iterate through results fields and transfer to output
     // database...  If a prefix is specified, only transfer fields
@@ -1121,7 +1123,8 @@ namespace {
   {
     // Iterate through the TRANSIENT-role fields of the input
     // database and transfer to output database.
-    Ioss::NameList state_fields = ige->field_describe(role);
+    Ioss::NameList state_fields;
+    ige->field_describe(role, &state_fields);
 
     // Complication here is that if the 'role' is 'Ioss::Field::MESH',
     // then the 'ids' field must be transferred first...
@@ -1410,7 +1413,8 @@ namespace {
 
   void transfer_properties(const Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge)
   {
-    Ioss::NameList properties = ige->property_describe();
+    Ioss::NameList properties;
+    ige->property_describe(&properties);
 
     // Iterate through properties and transfer to output database...
     for (const auto &property : properties) {

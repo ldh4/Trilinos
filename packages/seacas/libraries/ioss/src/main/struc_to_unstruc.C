@@ -527,8 +527,9 @@ namespace {
 
     const auto &blocks = region.get_structured_blocks();
     for (const auto &block : blocks) {
-      const auto    &nb     = block->get_node_block();
-      Ioss::NameList fields = nb.field_describe(role);
+      const auto    &nb = block->get_node_block();
+      Ioss::NameList fields;
+      nb.field_describe(role, &fields);
       for (const auto &field_name : fields) {
         Ioss::Field field = nb.get_field(field_name);
         if (!onb->field_exists(field_name)) {
@@ -546,7 +547,8 @@ namespace {
     size_t      num_nodes = region.get_node_blocks()[0]->entity_count();
     const auto &blocks    = region.get_structured_blocks();
     for (const auto &block : blocks) {
-      Ioss::NameList fields = block->field_describe(role);
+      Ioss::NameList fields;
+      block->field_describe(role, &fields);
 
       const auto &name   = block->name();
       auto       *eblock = output_region.get_element_block(name);
@@ -571,8 +573,9 @@ namespace {
   void transfer_nb_field_data(const Ioss::Region &region, Ioss::Region &output_region,
                               Ioss::Field::RoleType role)
   {
-    const auto    &onb    = output_region.get_node_blocks()[0];
-    Ioss::NameList fields = onb->field_describe(role);
+    const auto    &onb = output_region.get_node_blocks()[0];
+    Ioss::NameList fields;
+    onb->field_describe(role, &fields);
 
     for (const auto &field_name : fields) {
       assert(onb->field_exists(field_name));
@@ -610,7 +613,8 @@ namespace {
   {
     const auto &blocks = region.get_structured_blocks();
     for (const auto &block : blocks) {
-      Ioss::NameList fields = block->field_describe(role);
+      Ioss::NameList fields;
+      block->field_describe(role, &fields);
 
       for (const auto &field_name : fields) {
         const Ioss::Field &field = block->get_field(field_name);
@@ -631,7 +635,8 @@ namespace {
                        Ioss::Field::RoleType role)
   {
     // Check for transient fields...
-    Ioss::NameList fields = ige->field_describe(role);
+    Ioss::NameList fields;
+    ige->field_describe(role, &fields);
 
     // Iterate through results fields and transfer to output
     // database...

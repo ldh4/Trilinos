@@ -927,7 +927,8 @@ namespace {
                        Ioss::Field::RoleType role, const std::string &prefix)
   {
     // Check for transient fields...
-    Ioss::NameList fields = ige->field_describe(role);
+    Ioss::NameList fields;
+    ige->field_describe(role, &fields);
 
     // Iterate through results fields and transfer to output
     // database...  If a prefix is specified, only transfer fields
@@ -946,7 +947,8 @@ namespace {
                         Ioss::Field::RoleType role)
   {
     // Check for transient fields...
-    Ioss::NameList fields = ige->field_describe(role);
+    Ioss::NameList fields;
+    ige->field_describe(role, &fields);
 
     // Iterate through results fields and transfer to output database...
     for (const auto &field_name : fields) {
@@ -975,7 +977,8 @@ namespace {
   {
     // Iterate through the TRANSIENT-role fields of the input
     // database and transfer to output database.
-    Ioss::NameList state_fields = ige->field_describe(role);
+    Ioss::NameList state_fields;
+    ige->field_describe(role, &state_fields);
     // Iterate through mesh description fields and transfer to
     // output database...
     for (const auto &field_name : state_fields) {
@@ -1188,7 +1191,8 @@ namespace {
   {
     // Iterate through the TRANSIENT-role fields of the input
     // database and transfer to output database.
-    Ioss::NameList state_fields = ige->field_describe(role);
+    Ioss::NameList state_fields;
+    ige->field_describe(role, &state_fields);
 
     // Complication here is that if the 'role' is 'Ioss::Field::MESH',
     // then the 'ids' field must be transferred first...
@@ -1463,7 +1467,8 @@ namespace {
 
   void transfer_properties(Ioss::GroupingEntity *ige, Ioss::GroupingEntity *oge)
   {
-    Ioss::NameList properties = ige->property_describe();
+    Ioss::NameList properties;
+    ige->property_describe(&properties);
 
     // Iterate through properties and transfer to output database...
     for (const auto &property : properties) {
